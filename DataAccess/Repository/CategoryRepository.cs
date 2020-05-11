@@ -1,6 +1,6 @@
 ﻿using BulkyBook.DataAccess.Data;
 using DataAccess.Repository.IRepository;
-using Models;
+using BulkyBook.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,6 @@ namespace DataAccess.Repository
             if(categoryFromDb != null)
             {
                 categoryFromDb.Name = category.Name;
-                _db.SaveChanges();
             }
         }
     }

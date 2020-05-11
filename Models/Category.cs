@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Models
+namespace BulkyBook.Models
 {
     public class Category
     {
@@ -14,6 +14,6 @@ namespace Models
         [DisplayName("Category Name")]
         [Required]
         [MaxLength(50)]
-        public int Name { get; set; }
+        public string Name { get; set; }
     }
 }
