@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using BulkyBook.Models;
+using Dapper;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
+using Utility;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -34,7 +37,9 @@ namespace BulkyBook.Areas.Admin.Controllers
                 return View(coverType);
             }
 
-            coverType = _unitOfWork.CoverType.Get(id.GetValueOrDefault());
+            DynamicParameters parameter = new DynamicParameters();
+            parameter.Add("@Id", id);
+            coverType = _unitOfWork.SP_Call.OneRecord<CoverType>(SD.Usp_CoverType_Get, parameter);
 
             if (coverType == null)
             {
@@ -49,7 +54,7 @@ namespace BulkyBook.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Json(new { data = _unitOfWork.CoverType.GetAll() });
+            return Json(new { data = _unitOfWork.SP_Call.List<CoverType>(SD.Usp_CoverType_GetAll,null) });
         }
 
         [HttpPost]
@@ -58,17 +63,20 @@ namespace BulkyBook.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("@Name", coverType.Name);
+
                 if (coverType.Id == 0)
                 {
-                    _unitOfWork.CoverType.Add(coverType);
+                    _unitOfWork.SP_Call.Execute(SD.Usp_CoverType_Create, parameters);
                     
                 }
                 else
                 {
-                    _unitOfWork.CoverType.Update(coverType);
+                    parameters.Add("@Id", coverType.Id);
+                    _unitOfWork.SP_Call.Execute(SD.Usp_CoverType_Update, parameters);
                 }
 
-                _unitOfWork.Save();
                 return RedirectToAction(nameof(Index));
 
             }
@@ -78,14 +86,15 @@ namespace BulkyBook.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            CoverType coverTypefromBD = _unitOfWork.CoverType.Get(id);
+            DynamicParameters parameter = new DynamicParameters();
+            parameter.Add("@Id", id);
+            CoverType coverTypefromBD = _unitOfWork.SP_Call.OneRecord<CoverType>(SD.Usp_CoverType_Get, parameter);
             if(coverTypefromBD == null)
             {
                 return Json(new { success = false, message="Deletion failed" });
             }else
             {
-                _unitOfWork.CoverType.Remove(coverTypefromBD);
-                _unitOfWork.Save();
+                _unitOfWork.SP_Call.Execute(SD.Usp_CoverType_Delete, parameter);
                 return Json(new { success = true, message = "Deletion Successeded" });
 
             }
