@@ -11,6 +11,9 @@ namespace DataAccess.Repository.IRepository
 
         ICoverTypeRepository CoverType { get; }
 
+        IProductRepository ProductRepository { get; }
+
+
         void Save();
     }
 }
