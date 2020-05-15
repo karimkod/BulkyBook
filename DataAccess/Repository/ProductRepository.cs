@@ -22,7 +22,7 @@ namespace DataAccess.Repository
 
             if(productFromDb != null)
             {
-                productFromDb.Name = product.Name;
+                productFromDb.Title = product.Title;
                 productFromDb.Author = product.Author;
                 productFromDb.ISBN = product.ISBN;
                 productFromDb.Category = product.Category;

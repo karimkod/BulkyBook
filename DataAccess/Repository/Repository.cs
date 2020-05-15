@@ -44,7 +44,7 @@ namespace DataAccess.Repository
             {
                 foreach(string includeProp in includeProperties.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query.Include(includeProp);
+                    query = query.Include(includeProp);
                 }
             }
 
