@@ -8,23 +8,35 @@ $(document).ready(function () {
         }, 
         "columns": [
             {
-                "data": "name", "width":"14%"
+                "data": "name", "width":"12%"
             }, 
             {
-                "data": "streetAddress", "width": "14%"
+                "data": "streetAddress", "width": "12%"
             },
             {
-                "data": "city", "width": "14%"
+                "data": "city", "width": "12%"
             }, 
             {
-                "data": "state", "width": "14%"
+                "data": "state", "width": "12%"
             },
             {
-                "data": "postalCode", "width": "14%"
+                "data": "postalCode", "width": "12%"
             },
             {
-                "data": "phoneNumber", "width": "14%"
-            },         
+                "data": "phoneNumber", "width": "12%"
+            },  
+            {
+                "data": "isAuthorizedCompany",
+                "render": function (data) {
+                    if (data) {
+                        return `<input type="checkbox" disabled checked />`
+                    }
+                    else {
+                        return `<input type="checkbox" disabled/>`
+                    }
+                },
+                "width": "10%"
+            },
             {
                 "data": "id", 
                 "render": function (data) {
