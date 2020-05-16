@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using BulkyBook.Models;
 using Models.ViewModels;
+using Models;
 
 namespace BulkyBook.DataAccess.Data
 {
@@ -22,5 +23,7 @@ namespace BulkyBook.DataAccess.Data
         public DbSet<Product> Products { get; set; }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
+        public DbSet<Company> Companies { get; set; }
     }
 }

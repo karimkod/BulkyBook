@@ -23,6 +23,12 @@ namespace Models.ViewModels
         [NotMapped]
         public string Role { get; set; }
 
+        
+        public int CompanyId { get; set; }
+
+        [ForeignKey("CompanyId")]
+        public Company Company { get; set; }
+
 
     }
 }
