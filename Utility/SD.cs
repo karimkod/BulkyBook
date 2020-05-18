@@ -12,5 +12,13 @@ namespace Utility
         public static string Usp_CoverType_Delete = "usp_DeleteCoverType";
         public static string Usp_CoverType_Create = "usp_CreateCoverType";
 
+
+        public static string Role_User_Indiv = "Individual Customer";
+        public static string Role_User_Comp = "Company Customer";
+        public static string Role_Admin = "Admin";
+        public static string Role_Employee = "Employee";
+
+
+
     }
 } 
