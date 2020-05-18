@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -35,7 +36,7 @@ namespace BulkyBook.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
@@ -88,12 +89,31 @@ namespace BulkyBook.Areas.Identity.Pages.Account
 
             public string Role { get; set; }
 
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
+
+            public IEnumerable<SelectListItem> RoleList { get; set; }
+
 
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+
+            Input = new InputModel();
+
+            Input.CompanyList = _unitOfWork.Company.GetAll().Select(i => new SelectListItem()
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+
+            Input.RoleList = _roleManager.Roles.Where(r => r.Name != SD.Role_User_Indiv).Select(x => x.Name).Select(i => new SelectListItem()
+            {
+                Text = i,
+                Value = i
+            });
+
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -103,18 +123,19 @@ namespace BulkyBook.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser {
+                var user = new ApplicationUser
+                {
                     UserName = Input.Email,
                     Email = Input.Email,
-                    PostalCode = Input.PostalCode, 
-                    StreetAddress = Input.StreetAddress, 
+                    PostalCode = Input.PostalCode,
+                    StreetAddress = Input.StreetAddress,
                     PhoneNumber = Input.PhoneNumber,
                     Name = Input.Name,
                     State = Input.State,
-                    City = Input.City, 
-                    Role = Input.Role, 
+                    City = Input.City,
+                    Role = Input.Role,
                     CompanyId = Input.CompanyId
-                    
+
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
@@ -141,8 +162,18 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                         await _roleManager.CreateAsync(new IdentityRole(SD.Role_User_Indiv));
                     }
 
-                    await _userManager.AddToRoleAsync(user, SD.Role_Admin);
-
+                    if (user.Role == null)
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.Role_User_Indiv);
+                    }
+                    else
+                    {
+                        if (user.CompanyId > 0)
+                        {
+                            await _userManager.AddToRoleAsync(user, SD.Role_User_Comp);
+                        }
+                        else await _userManager.AddToRoleAsync(user, user.Role);
+                    }
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     //var callbackUrl = Url.Page(
@@ -162,8 +193,16 @@ namespace BulkyBook.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        if (user.Role == null)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "User", new { Area = "Admin" });
+                        }
+
                     }
                 }
                 foreach (var error in result.Errors)
