@@ -7,10 +7,13 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using BulkyBook.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.AspNetCore.Authorization;
+using Utility;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CategoryController : Controller
     {
 

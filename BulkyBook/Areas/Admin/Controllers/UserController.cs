@@ -10,10 +10,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using BulkyBook.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Google.Apis.Admin.Directory.directory_v1.Data;
+using Microsoft.AspNetCore.Authorization;
+using Utility;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+
     public class UserController : Controller
     {
 

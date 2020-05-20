@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using BulkyBook.Models;
 using Dapper;
 using DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
+
     public class CoverTypeController : Controller
     {
 
