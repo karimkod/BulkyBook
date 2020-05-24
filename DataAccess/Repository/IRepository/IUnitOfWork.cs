@@ -18,6 +18,12 @@ namespace DataAccess.Repository.IRepository
         IApplicationUserRepository ApplicationUser { get; }
 
 
+        public IShoppingCartRepository ShoppingCart { get; }
+
+        public IOrderHeaderRepository OrderHeader { get;}
+
+        public IOrderDetailsRepository OrderDetails { get; }
+
         void Save();
     }
 }
