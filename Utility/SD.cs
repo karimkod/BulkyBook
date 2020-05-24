@@ -18,6 +18,8 @@ namespace Utility
         public const string Role_Admin = "Admin";
         public const string Role_Employee = "Employee";
 
+        public const string Session_Cart_count = "Shopping Cart Count";
+
 
         public static double GetPriceDependingOnQuantity(int quantity, double price, double price50, double price100)
         {

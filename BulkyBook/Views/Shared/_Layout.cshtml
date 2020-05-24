@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using Utility
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -40,7 +45,7 @@
                             </li>
                         }
 
-                        @if (User.IsInRole(Utility.SD.Role_Admin) ||User.IsInRole(Utility.SD.Role_Employee))
+                        @if (User.IsInRole(Utility.SD.Role_Admin) || User.IsInRole(Utility.SD.Role_Employee))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -53,7 +58,33 @@
                                 </div>
                             </li>
                         }
-                        </ul>
+
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(SD.Session_Cart_count) != null)
+                        {
+                            <li style="color:white">
+
+                                <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link">
+                                    @{
+                                        var count = HttpContextAccessor.HttpContext.Session.GetInt32(SD.Session_Cart_count);
+                                    }
+                                    <i class="fas fa-shopping-cart"></i> &nbsp; (@count)
+                                </a>
+
+                            </li>
+                        }
+                        else
+                        {
+                            <li style="color:white">
+
+                                <a href="#" class="nav-link">
+                                  
+                                    <i class="fas fa-shopping-cart"></i> &nbsp; (0)
+                                </a>
+
+                            </li>
+                        }
+
+                    </ul>
                 </div>
             </div>
         </nav>
