@@ -17,6 +17,8 @@ using DataAccess.Repository.IRepository;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Utility;
+using Microsoft.Extensions.Options;
+using Microsoft.CodeAnalysis.Options;
 
 namespace BulkyBook
 {
@@ -65,6 +67,13 @@ namespace BulkyBook
             );
 
 
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.IsEssential = true;
+            });
+
 
         }
 
@@ -87,6 +96,7 @@ namespace BulkyBook
 
             app.UseRouting();
 
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 
