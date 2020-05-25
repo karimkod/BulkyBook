@@ -124,7 +124,7 @@ namespace BulkyBook.Areas.Customer.Controllers
                 if (currentCount == 0)
                 {
 
-                return RedirectToAction(controllerName: "Home", actionName: "Index");
+                    return RedirectToAction(controllerName: "Home", actionName: "Index");
 
                 }
 
@@ -145,9 +145,9 @@ namespace BulkyBook.Areas.Customer.Controllers
         {
             var cartFromDb = _unitOfWork.ShoppingCart.GetFirstOrDefault(s => s.Id == cartId, includeProperties: "Product");
 
-             _unitOfWork.ShoppingCart.Remove(cartFromDb);
+            _unitOfWork.ShoppingCart.Remove(cartFromDb);
             var currentCount = HttpContext.Session.GetInt32(SD.Session_Cart_count) - 1;
-            HttpContext.Session.SetInt32(SD.Session_Cart_count, currentCount??0);
+            HttpContext.Session.SetInt32(SD.Session_Cart_count, currentCount ?? 0);
             _unitOfWork.Save();
 
             if (currentCount == 0)
