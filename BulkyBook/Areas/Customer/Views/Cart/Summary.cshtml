@@ -31,9 +31,9 @@
                                         <label>Name</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="@Model.orderHeader.ApplicationUser.Name" type="text" class="form-control" />
+                                        <input asp-for="@Model.orderHeader.Name" type="text" class="form-control" />
                                     </div>
-                                    <span asp-validation-for="@Model.orderHeader.ApplicationUser.Name"></span>
+                                    <span asp-validation-for="@Model.orderHeader.Name"></span>
 
                                 </div>
                                 <div class="row my-1">
@@ -41,9 +41,9 @@
                                         <label>Phone</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="@Model.orderHeader.ApplicationUser.PhoneNumber" type="text" class="form-control" />
+                                        <input asp-for="@Model.orderHeader.PhoneNumber" type="text" class="form-control" />
                                     </div>
-                                    <span asp-validation-for="@Model.orderHeader.ApplicationUser.PhoneNumber"></span>
+                                    <span asp-validation-for="@Model.orderHeader.PhoneNumber"></span>
 
                                 </div>
                                 <div class="row my-1">
@@ -51,9 +51,9 @@
                                         <label>Street Address</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="@Model.orderHeader.ApplicationUser.StreetAddress" type="text" class="form-control" />
+                                        <input asp-for="@Model.orderHeader.StreetAddress" type="text" class="form-control" />
                                     </div>
-                                    <span asp-validation-for="@Model.orderHeader.ApplicationUser.StreetAddress"></span>
+                                    <span asp-validation-for="@Model.orderHeader.StreetAddress"></span>
 
                                 </div>
                                 <div class="row my-1">
@@ -61,9 +61,9 @@
                                         <label>City</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="@Model.orderHeader.ApplicationUser.City" type="text" class="form-control" />
+                                        <input asp-for="@Model.orderHeader.City" type="text" class="form-control" />
                                     </div>
-                                    <span asp-validation-for="@Model.orderHeader.ApplicationUser.City"></span>
+                                    <span asp-validation-for="@Model.orderHeader.City"></span>
 
                                 </div>
                                 <div class="row my-1">
@@ -71,18 +71,18 @@
                                         <label>State</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="@Model.orderHeader.ApplicationUser.State" type="text" class="form-control" />
+                                        <input asp-for="@Model.orderHeader.State" type="text" class="form-control" />
                                     </div>
-                                    <span asp-validation-for="@Model.orderHeader.ApplicationUser.State"></span>
+                                    <span asp-validation-for="@Model.orderHeader.State"></span>
                                 </div>
                                 <div class="row my-1">
                                     <div class="col-3">
                                         <label>Postal Code</label>
                                     </div>
                                     <div class="col-9">
-                                        <input asp-for="@Model.orderHeader.ApplicationUser.PostalCode" type="text" class="form-control" />
+                                        <input asp-for="@Model.orderHeader.PostalCode" type="text" class="form-control" />
                                     </div>
-                                    <span asp-validation-for="@Model.orderHeader.ApplicationUser.PostalCode"></span>
+                                    <span asp-validation-for="@Model.orderHeader.PostalCode"></span>
 
                                 </div>
                             </div>
@@ -117,28 +117,28 @@
                         </div>
                         <div class="col-12 col-md-4">
 
-                            @{
+                            @*@{
 
-                                var OrderTotalForStripe = Model.orderHeader.OrderTotal * 100;
+                                var ordertotalforstripe = model.orderheader.ordertotal * 100;
 
                             }
 
                             <script src ="https://checkout.stripe.com/checkout.js" class="stripe-button" 
-                                    data-key="@Stripe.Value.PublishableKey" 
-                                    data-amount="@OrderTotalForStripe" 
-                                    data-name="Bulky Book"
-                                    data-label="Place Order"
-                                    data-description = "Get Books, For Free"
+                                    data-key="@stripe.value.publishablekey" 
+                                    data-amount="@ordertotalforstripe" 
+                                    data-name="bulky book"
+                                    data-label="place order"
+                                    data-description = "get books, for free"
                                     data-locale="auto"
                                     data-allow-remember-me="false"
                                     data-image="https://stripe.com/img/documentation/checkout/marketplace.png">
 
                             </script>
                             <script>
-                                document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
-                            </script>
+                                document.getelementsbyclassname("stripe-button-el")[0].style.display = 'none';
+                            </script>*@
 
-                            <button type="submit" value="Place Order" class="btn btn-success form-control">Place Order</button>
+                            <button type="submit" value="Place Order" class="btn btn-success form-control" >Place Order</button>
                         </div>
                     </div>
                 </div>

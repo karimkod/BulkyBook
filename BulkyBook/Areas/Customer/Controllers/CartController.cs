@@ -34,6 +34,7 @@ namespace BulkyBook.Areas.Customer.Controllers
             _userManager = userManager;
         }
 
+        [BindProperty]
         public ShoppingCartVM shoppingCartVM { get; set; }
 
         public IActionResult Index()
@@ -181,10 +182,10 @@ namespace BulkyBook.Areas.Customer.Controllers
             {
                 cart.Price = SD.GetPriceDependingOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
                 shoppingCartVM.orderHeader.OrderTotal += (cart.Price * cart.Count);
-       
+
             }
 
-            shoppingCartVM.orderHeader.Name = shoppingCartVM.orderHeader.ApplicationUser.Name; 
+            shoppingCartVM.orderHeader.Name = shoppingCartVM.orderHeader.ApplicationUser.Name;
             shoppingCartVM.orderHeader.PhoneNumber = shoppingCartVM.orderHeader.ApplicationUser.PhoneNumber;
 
             shoppingCartVM.orderHeader.StreetAddress = shoppingCartVM.orderHeader.ApplicationUser.StreetAddress;
@@ -197,18 +198,61 @@ namespace BulkyBook.Areas.Customer.Controllers
 
         }
 
+        [HttpPost()]
+        [ValidateAntiForgeryToken]
+        [ActionName("Summary")]
+        public IActionResult SummaryPost()
+        {
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            shoppingCartVM.orderHeader.ApplicationUser = _unitOfWork.ApplicationUser.
+                GetFirstOrDefault(u => u.Id == claim.Value, includeProperties: "Company");
+
+            shoppingCartVM.shoppingCarts = _unitOfWork.ShoppingCart.
+                GetAll(s => s.ApplicationUserId == claim.Value, includeProperties: "Product");
+
+            shoppingCartVM.orderHeader.PaymentStatus = SD.PaymentStatusPending;
+            shoppingCartVM.orderHeader.OrderStatus = SD.StatusPending;
+            shoppingCartVM.orderHeader.ApplicationUserId = claim.Value;
+            shoppingCartVM.orderHeader.OrderDate = DateTime.Now;
+
+            _unitOfWork.OrderHeader.Add(shoppingCartVM.orderHeader);
+            _unitOfWork.Save();
+
+            List<OrderDetails> orderDetailsList = new List<OrderDetails>();
+            foreach(var item in shoppingCartVM.shoppingCarts)
+            {
+                item.Price = SD.GetPriceDependingOnQuantity(item.Count, item.Product.Price,
+                    item.Product.Price50, item.Product.Price100);
+                OrderDetails orderDetails = new OrderDetails()
+                {
+                    ProductId = item.ProductId, 
+                    Cout = item.Count, 
+                    Price = item.Price,
+                    OrderId = shoppingCartVM.orderHeader.Id, 
+                    
+                };
+                shoppingCartVM.orderHeader.OrderTotal += orderDetails.Cout * orderDetails.Price;
+                _unitOfWork.OrderDetails.Add(orderDetails);
+            }
+
+            _unitOfWork.ShoppingCart.RemoveRange(shoppingCartVM.shoppingCarts);
+            HttpContext.Session.SetInt32(SD.Session_Cart_count, 0);
+
+            _unitOfWork.Save();
+
+
+            return RedirectToAction("OrderConfirmation", "Cart", new { id = shoppingCartVM.orderHeader.Id });   
+
+        }
+
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
+        }
 
 
     }
-
-    //[HttpPost()]
-    //[ValidateAntiForgeryToken]
-    //[ActionName("Summary")]
-    //public IActionResult SummaryPost()
-    //{
-
-    //}
-
-
-
 }
