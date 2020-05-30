@@ -201,13 +201,13 @@ namespace BulkyBook.Areas.Customer.Controllers
 
     }
 
-    [HttpPost()]
-    [ValidateAntiForgeryToken]
-    [ActionName("Summary")]
-    public IActionResult SummaryPost()
-    {
+    //[HttpPost()]
+    //[ValidateAntiForgeryToken]
+    //[ActionName("Summary")]
+    //public IActionResult SummaryPost()
+    //{
 
-    }
+    //}
 
 
 
