@@ -160,8 +160,55 @@ namespace BulkyBook.Areas.Customer.Controllers
         }
 
 
+        public IActionResult Summary()
+        {
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            shoppingCartVM = new ShoppingCartVM()
+            {
+                orderHeader = new OrderHeader(),
+                shoppingCarts = _unitOfWork.ShoppingCart.GetAll(s => s.ApplicationUserId == claim.Value, includeProperties: "Product")
+            };
+
+            shoppingCartVM.orderHeader.OrderTotal = 0;
+            shoppingCartVM.orderHeader.ApplicationUserId = claim.Value;
+            shoppingCartVM.orderHeader.ApplicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == claim.Value, includeProperties: "Company");
+
+
+            foreach (ShoppingCart cart in shoppingCartVM.shoppingCarts)
+            {
+                cart.Price = SD.GetPriceDependingOnQuantity(cart.Count, cart.Product.Price, cart.Product.Price50, cart.Product.Price100);
+                shoppingCartVM.orderHeader.OrderTotal += (cart.Price * cart.Count);
+       
+            }
+
+            shoppingCartVM.orderHeader.Name = shoppingCartVM.orderHeader.ApplicationUser.Name; 
+            shoppingCartVM.orderHeader.PhoneNumber = shoppingCartVM.orderHeader.ApplicationUser.PhoneNumber;
+
+            shoppingCartVM.orderHeader.StreetAddress = shoppingCartVM.orderHeader.ApplicationUser.StreetAddress;
+            shoppingCartVM.orderHeader.City = shoppingCartVM.orderHeader.ApplicationUser.City;
+            shoppingCartVM.orderHeader.State = shoppingCartVM.orderHeader.ApplicationUser.State;
+            shoppingCartVM.orderHeader.PostalCode = shoppingCartVM.orderHeader.ApplicationUser.PostalCode;
+
+            return View(shoppingCartVM);
+
+
+        }
+
+
 
     }
+
+    [HttpPost()]
+    [ValidateAntiForgeryToken]
+    [ActionName("Summary")]
+    public IActionResult SummaryPost()
+    {
+
+    }
+
 
 
 }
