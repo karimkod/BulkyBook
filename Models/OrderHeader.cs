@@ -25,7 +25,8 @@ namespace Models
         public DateTime ShippingDate { get; set; }
 
         [Required]
-        public double OrderTotal;
+
+        public double OrderTotal { get; set; }
 
         public string TrackingNumber { get; set; }
 
