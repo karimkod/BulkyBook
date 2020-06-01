@@ -221,7 +221,6 @@ namespace BulkyBook.Areas.Customer.Controllers
             _unitOfWork.OrderHeader.Add(shoppingCartVM.orderHeader);
             _unitOfWork.Save();
 
-            List<OrderDetails> orderDetailsList = new List<OrderDetails>();
             foreach(var item in shoppingCartVM.shoppingCarts)
             {
                 item.Price = SD.GetPriceDependingOnQuantity(item.Count, item.Product.Price,
