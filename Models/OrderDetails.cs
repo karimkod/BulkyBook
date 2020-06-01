@@ -21,7 +21,7 @@ namespace Models
         [Required]
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
-        public Product Product;
+        public Product Product { get; set; }
 
         public int Cout { get; set; }
         
