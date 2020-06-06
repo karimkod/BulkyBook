@@ -54,29 +54,3 @@ function GetOrders(url) {
         ]
     });
 }
-
-function Delete(url) {
-    swal({
-        title: "Do you really want to delete this Category",
-        text: "You will not be able to undo this action",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true
-    }).then((willDelete)=>
-    {
-        if (willDelete) {
-            $.ajax({
-                type: "DELETE",
-                url: url,
-                success: function (data) {
-                    if (data.success) {
-                        toastr.success(data.message);
-                        dataTable.ajax.reload();
-                    }
-                    else
-                        toastr.error(data.message);
-                }
-            });
-        } 
-    });
-}

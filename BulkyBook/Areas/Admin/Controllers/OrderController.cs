@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.ViewModels;
+using Stripe;
 using Utility;
 
 namespace BulkyBook.Areas.Admin.Controllers
@@ -43,6 +44,101 @@ namespace BulkyBook.Areas.Admin.Controllers
         }
 
 
+        [Authorize(Roles =SD.Role_Admin +"," + SD.Role_Employee)]
+        public IActionResult StartProcessing(int id)
+        {
+            var orderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == id);
+            orderFromDb.OrderStatus = SD.StatusInProcess;
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult ShipOrder()
+        {
+            var orderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == OrderDetailsVM.OrderHeader.Id);
+            orderFromDb.OrderStatus = SD.StatusShipped;
+            orderFromDb.ShippingDate = DateTime.Now;
+            orderFromDb.Carrier = OrderDetailsVM.OrderHeader.Carrier;
+            orderFromDb.TrackingNumber = OrderDetailsVM.OrderHeader.TrackingNumber;
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult CancelOrder(int id)
+        {
+            var orderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == id);
+            if (orderFromDb.PaymentStatus == SD.StatusApproved)
+            {
+                var options = new RefundCreateOptions
+                {
+                    Amount = Convert.ToInt32(orderFromDb.OrderTotal * 100),
+                    Reason = RefundReasons.RequestedByCustomer,
+                    Charge = orderFromDb.TransactionId
+
+                };
+                var service = new RefundService();
+                Refund refund = service.Create(options);
+
+                orderFromDb.OrderStatus = SD.StatusRefunded;
+                orderFromDb.PaymentStatus = SD.StatusRefunded;
+            }
+            else
+            {
+                orderFromDb.OrderStatus = SD.StatusCancelled;
+                orderFromDb.PaymentStatus = SD.StatusCancelled;
+            }
+
+            _unitOfWork.Save();
+
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Details")]
+        public IActionResult Details(string stripeToken)
+        {
+
+            var orderFromDb = _unitOfWork.OrderHeader.GetFirstOrDefault(o => o.Id == OrderDetailsVM.OrderHeader.Id);
+            if (stripeToken != null)
+            {
+                var options = new ChargeCreateOptions
+                {
+                    Amount = Convert.ToInt32(orderFromDb.OrderTotal * 100),
+                    Currency = "EUR",
+                    Description = "Order ID : " + orderFromDb.Id,
+                    Source = stripeToken
+                };
+
+                var service = new ChargeService();
+                Charge charge = service.Create(options);
+
+                if (charge.BalanceTransactionId == null)
+                {
+                    orderFromDb.PaymentStatus = SD.PaymentStatusRejected;
+                }
+                else
+                {
+                    orderFromDb.TransactionId = charge.BalanceTransactionId;
+
+                }
+
+                if (charge.Status.ToLower() == "succeeded")
+                {
+                    orderFromDb.PaymentStatus = SD.PaymentStatusApproved;
+                    orderFromDb.PaymentDate = DateTime.Now;
+
+                }
+            }
+
+            _unitOfWork.Save();
+
+            return RedirectToAction("Details", "Order", new { id = orderFromDb.Id });
+        }
 
         [HttpGet]
         public IActionResult GetOrderList(string status)
