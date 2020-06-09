@@ -9,6 +9,8 @@ using BulkyBook.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Utility;
+using Models.ViewModels;
+using Models;
 
 namespace BulkyBook.Areas.Admin.Controllers
 {
@@ -24,9 +26,26 @@ namespace BulkyBook.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int categoryPage = 1)
         {
-            return View();
+            CategoryViewModel CategoryVM = new CategoryViewModel
+            {
+                Categories = _unitOfWork.Category.GetAll()
+            };
+
+            var count = CategoryVM.Categories.Count();
+            CategoryVM.Categories = CategoryVM.Categories.OrderBy(c => c.Name)
+                .Skip((categoryPage - 1) * 2).Take(2).ToList();
+
+            CategoryVM.PagingInfo = new PagingInfo()
+            {
+                CurrentPage = categoryPage,
+                ItemsPerPage = 2, 
+                TotalItem = count, 
+                urlParam = "/Admin/Category/Index?categoryPage=:"
+            };
+
+            return View(CategoryVM);
         }
 
         public IActionResult Upsert(int? id)
@@ -34,13 +53,13 @@ namespace BulkyBook.Areas.Admin.Controllers
 
             Category category = new Category();
 
-            if(id == null)
+            if (id == null)
             {
                 return View(category);
             }
 
             category = _unitOfWork.Category.Get(id.GetValueOrDefault());
-            if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
@@ -57,13 +76,14 @@ namespace BulkyBook.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Upsert(Category category)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                if(category.Id == 0)
+                if (category.Id == 0)
                 {
                     _unitOfWork.Category.Add(category);
-                    
-                }else
+
+                }
+                else
                 {
                     _unitOfWork.Category.Update(category);
                 }
@@ -77,11 +97,12 @@ namespace BulkyBook.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            var category = _unitOfWork.Category.Get(id); 
-            if(category == null)
+            var category = _unitOfWork.Category.Get(id);
+            if (category == null)
             {
                 return Json(new { success = false, message = "Problem while deleting" });
-            }else
+            }
+            else
             {
                 _unitOfWork.Category.Remove(category);
                 _unitOfWork.Save();
