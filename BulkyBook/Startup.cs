@@ -20,6 +20,8 @@ using Utility;
 using Microsoft.Extensions.Options;
 using Microsoft.CodeAnalysis.Options;
 using Stripe;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BulkyBook
 {
@@ -44,6 +46,7 @@ namespace BulkyBook
             //services.Configure<EmailOptions>(Configuration);
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.ConfigureApplicationCookie(options =>

@@ -100,12 +100,15 @@ namespace BulkyBook.Areas.Admin.Controllers
             var category = _unitOfWork.Category.Get(id);
             if (category == null)
             {
+                TempData["error"] = "Problem while deleting";
                 return Json(new { success = false, message = "Problem while deleting" });
             }
             else
             {
                 _unitOfWork.Category.Remove(category);
                 _unitOfWork.Save();
+                TempData["success"] = "Deleted Successfully";
+
                 return Json(new { success = true, message = "Deleted Successfully" });
             }
         }

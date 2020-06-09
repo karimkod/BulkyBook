@@ -62,8 +62,8 @@
                         <li style="color:white">
 
                             <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="nav-link">
-                    
-                                 &nbsp;Orders
+
+                                &nbsp;Orders
                             </a>
 
                         </li>
@@ -101,6 +101,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            <partial name="_Notification" />
             @RenderBody()
         </main>
     </div>
